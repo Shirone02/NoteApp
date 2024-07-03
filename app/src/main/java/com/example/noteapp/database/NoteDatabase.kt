@@ -1,16 +1,18 @@
 package com.example.noteapp.database
 
 import android.content.Context
-import androidx.core.content.contentValuesOf
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.noteapp.models.Category
 import com.example.noteapp.models.Note
 
 
-@Database(entities = [Note::class], version = 1)
+@Database(entities = [Note::class, Category::class], version = 2, exportSchema = true)
 abstract class NoteDatabase : RoomDatabase() {
+
     abstract fun getNoteDao(): NoteDao
+    abstract fun getCategoryDao(): CategoryDao
 
     companion object {
         @Volatile
@@ -25,6 +27,8 @@ abstract class NoteDatabase : RoomDatabase() {
 
         private fun createDatabase(context: Context) =
             Room.databaseBuilder(context.applicationContext, NoteDatabase::class.java, "note_db")
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
                 .build()
     }
 }

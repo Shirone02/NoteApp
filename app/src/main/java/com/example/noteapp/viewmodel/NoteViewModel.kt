@@ -27,4 +27,6 @@ class NoteViewModel (app: Application, private val noteRepository: NoteRepositor
     fun deleteNotes(ids: List<Int>) = viewModelScope.launch {
         noteRepository.deleteByIds(ids)
     }
+
+    fun getNotesByCategory(categoryId: Int?) = noteRepository.getNotesByCategory(categoryId)
 }

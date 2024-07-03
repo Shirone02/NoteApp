@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.noteapp.models.Category
 import com.example.noteapp.models.Note
 
 @Dao
@@ -28,4 +29,7 @@ interface NoteDao {
 
     @Query("DELETE FROM notes WHERE id IN (:ids)")
     suspend fun deleteByIds(ids: List<Int>)
+
+    @Query("select * from notes where categoryId = :categoryId OR categoryId IS NULL")
+    fun getNotesByCategory(categoryId: Int?): LiveData<List<Note>>
 }

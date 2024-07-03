@@ -37,6 +37,7 @@ class EditNoteActivity : AppCompatActivity() {
 
         val title = intent.getStringExtra("title")
         val content = intent.getStringExtra("content")
+
         currentContent = binding.edtContent.text.toString()
 
         binding.edtTitle.setText(title)
@@ -46,11 +47,12 @@ class EditNoteActivity : AppCompatActivity() {
 
     private fun saveNote() {
         val id = intent.getIntExtra("id", 0)
+        val categoryId = intent.getIntExtra("categoryId", 0)
 
         val noteTitle = binding.edtTitle.text.toString()
         val noteContent = binding.edtContent.text.toString()
 
-        val note = Note(id, noteTitle, noteContent, getCurrentTime())
+        val note = Note(id, noteTitle, noteContent, getCurrentTime(), categoryId)
         noteViewModel.updateNote(note)
 
         Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()

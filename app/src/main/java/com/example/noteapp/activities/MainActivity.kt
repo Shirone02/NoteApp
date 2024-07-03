@@ -18,6 +18,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.lifecycle.ViewModelProvider
@@ -29,12 +31,19 @@ import com.example.noteapp.database.NoteDatabase
 import com.example.noteapp.databinding.ActivityMainBinding
 import com.example.noteapp.fragments.BackupFragment
 import com.example.noteapp.fragments.EditCategoriesFragment
+import com.example.noteapp.fragments.HelpFragment
 import com.example.noteapp.fragments.NotesFragment
+import com.example.noteapp.fragments.PrivacyPolicyFragment
+import com.example.noteapp.fragments.RateFragment
+import com.example.noteapp.fragments.SettingFragment
 import com.example.noteapp.fragments.TrashFragment
 import com.example.noteapp.fragments.UncategorizedFragment
 import com.example.noteapp.listeners.OnItemClickListener
 import com.example.noteapp.models.Note
+import com.example.noteapp.repository.CategoryRepository
 import com.example.noteapp.repository.NoteRepository
+import com.example.noteapp.viewmodel.CategoryViewModel
+import com.example.noteapp.viewmodel.CategoryViewModelFactory
 import com.example.noteapp.viewmodel.NoteViewModel
 import com.example.noteapp.viewmodel.NoteViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
@@ -49,7 +58,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private lateinit var noteViewModel: NoteViewModel
+    lateinit var noteViewModel: NoteViewModel
+    lateinit var categoryViewModel: CategoryViewModel
     private lateinit var noteAdapter: ListNoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,13 +74,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             addNote()
         }
 
-        setSupportActionBar(binding.topAppBar)
-
-        binding.navView.setNavigationItemSelectedListener(this)
-
-        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.topAppBar, R.string.open_nav, R.string.close_nav)
+//        setSupportActionBar(binding.topAppBar)
+//
+        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.topAppBar,R.string.open_nav, R.string.close_nav)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+
+        binding.navView.setNavigationItemSelectedListener(this)
 
         if (savedInstanceState == null){
             supportFragmentManager.beginTransaction()
@@ -228,19 +238,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    // thêm note
     private fun addNote() {
-        val note = Note(0, "Untitled", "", getCurrentTime())
+        val note = Note(0, "Untitled", "", getCurrentTime(), null)
         noteViewModel.addNote(note)
 
         val intent = Intent(this@MainActivity, EditNoteActivity::class.java)
         intent.putExtra("id", note.id)
         intent.putExtra("title", note.title)
         intent.putExtra("content", note.content)
+        intent.putExtra("categoryId", note.categoryId)
         startActivity(intent)
 
-        Toast.makeText(this, "", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Add successful !!!", Toast.LENGTH_SHORT).show()
     }
 
+    //hiển thị recyclerView danh sách note
     private fun setUpNoteRecyclerView() {
         noteAdapter = ListNoteAdapter(object : OnItemClickListener {
             override fun onNoteClick(note: Note, isChoose: Boolean) {
@@ -249,6 +262,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     intent.putExtra("id", note.id)
                     intent.putExtra("title", note.title)
                     intent.putExtra("content", note.content)
+                    intent.putExtra("categoryId", note.categoryId)
                     startActivity(intent)
                 }
             }
@@ -264,7 +278,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         this.let {
             noteViewModel.getAllNote().observe(this) { note ->
                 noteAdapter.differ.submitList(note)
-                updateUI(note)
+                //updateUI(note)
+                binding.listNoteRecyclerView.visibility = View.GONE
             }
         }
     }
@@ -282,9 +297,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setUpViewModel() {
         val noteRepository = NoteRepository(NoteDatabase(this))
+        val categoryRepository = CategoryRepository(NoteDatabase(this))
 
+        val categoryViewModelProviderFactory = CategoryViewModelFactory(application, categoryRepository)
         val viewModelProviderFactory = NoteViewModelFactory(application, noteRepository)
 
+        categoryViewModel = ViewModelProvider(this, categoryViewModelProviderFactory)[CategoryViewModel::class.java]
         noteViewModel = ViewModelProvider(this, viewModelProviderFactory)[NoteViewModel::class.java]
     }
 
@@ -309,7 +327,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_backup -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, BackupFragment()).commit()
             R.id.nav_trash -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, TrashFragment()).commit()
             R.id.nav_uncategorized -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, UncategorizedFragment()).commit()
-
+            R.id.nav_setting -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, SettingFragment()).commit()
+            R.id.nav_rate -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, RateFragment()).commit()
+            R.id.nav_help -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HelpFragment()).commit()
+            R.id.nav_policy -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, PrivacyPolicyFragment()).commit()
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)

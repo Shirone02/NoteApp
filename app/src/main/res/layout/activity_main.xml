@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     tools:openDrawer="start"
     tools:context=".activities.MainActivity"
-    android:background="@color/yellow">
+    android:background="@color/lightYellow">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -43,44 +43,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/appBar"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:listitem="@layout/item_note"/>
+            tools:listitem="@layout/item_note" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <ImageView
             android:id="@+id/addNoteFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="32dp"
+            android:layout_margin="16dp"
             android:background="@drawable/bg_plus"
-            android:src="@drawable/ic_plus"
+            android:src="@drawable/baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <View
-            android:id="@+id/overlay_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#99000000"
-            android:visibility="gone"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/white" />
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/fragment_container" />
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@color/yellow"
-            app:headerLayout="@layout/nav_header"
-            app:menu="@menu/nav_menu"
-            android:visibility="gone">
-
-        </com.google.android.material.navigation.NavigationView>
+            android:layout_height="0dp"
+            android:id="@+id/fragment_container"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appBar"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/yellow"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu">
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
